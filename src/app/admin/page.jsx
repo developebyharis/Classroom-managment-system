@@ -7,6 +7,7 @@ import { classroomsData, teachers } from "@/data";
 import AddClassroomForm from "@/components/AddClsForm";
 import AddTeacherForm from "@/components/AddTeacherForm";
 import FilterDropdowns from "@/components/filter/options";
+import TeacherCard from "@/components/TeacherCard";
 
 const departments = [
   "All Department",
@@ -35,10 +36,9 @@ export default function AdminPage() {
   );
 
   return (
-    <div className="max-w-3xl mx-auto py-10 px-4">
-      <h1 className="text-2xl font-bold mb-6 text-center">Admin Dashboard</h1>
+    <div className="py-10 px-4">
       <Tabs defaultValue="classrooms" className="w-full">
-        <TabsList className="w-full flex justify-center mb-6">
+        <TabsList className="w-full max-w-sm mx-auto flex justify-center mb-6">
           <TabsTrigger value="classrooms" className="flex-1">
             Classrooms
           </TabsTrigger>
@@ -71,11 +71,11 @@ export default function AdminPage() {
                 No classrooms found.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-2 pt-6 px-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-2 px-1">
                 {filteredClassrooms.map((cls, idx) => (
-                <div key={idx} className="flex">
-                  <ClassroomCard classroom={cls} />
-                </div>
+                  <div key={idx} className="flex">
+                    <ClassroomCard classroom={cls} />
+                  </div>
                 ))}
               </div>
             )}
@@ -85,19 +85,15 @@ export default function AdminPage() {
           <div className="flex justify-end mb-4">
             <Button onClick={() => setShowAddTeacher(true)}>Add Teacher</Button>
           </div>
-          <ul className="divide-y border rounded bg-white">
-            {teachers.slice(1).map((t) => (
-              <li
-                key={t}
-                className="px-4 py-3 flex justify-between items-center"
-              >
-                <span>{t}</span>
-                <Button size="sm" variant="outline">
-                  Edit
-                </Button>
-              </li>
-            ))}
-          </ul>
+          {teachersData && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-6">
+              {teachersData.map((teacher, index) => (
+                <div key={index} className="flex">
+                  <TeacherCard teacher={teacher} />
+                </div>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
       <AddClassroomForm

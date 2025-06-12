@@ -23,9 +23,9 @@ export default function TeacherPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto py-10">
+    <div className="px-4 py-10">
       <Tabs defaultValue="yourBookings" className="w-full">
-        <TabsList className="w-full flex justify-center mb-6">
+        <TabsList className="max-w-xl mx-auto flex justify-center mb-6">
           <TabsTrigger value="yourBookings" className="flex-1">
             Your Bookings
           </TabsTrigger>
@@ -57,21 +57,13 @@ export default function TeacherPage() {
         <TabsContent value="availableClassrooms">
           <h2 className="text-xl font-semibold mb-4">Available Classrooms</h2>
           <ul className="divide-y">
-            {classroomsData
-              .filter((cls) => cls.status.toLowerCase() === "available")
-              .map((cls, index) => (
-                <ClassroomCard
-                  key={index}
-                  classroomName={cls.classroomName}
-                  teacherName={cls.teacherName}
-                  timeSlot={cls.timeSlot}
-                  subject={cls.subject}
-                  semester={cls.semester}
-                  section={cls.section}
-                  department={cls.department}
-                  status={cls.status}
-                />
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-2">
+              {classroomsData
+                .filter((cls) => cls.status.toLowerCase() === "available")
+                .map((cls, index) => (
+                  <ClassroomCard key={index} classroom={cls} />
+                ))}
+            </div>
           </ul>
         </TabsContent>
       </Tabs>

@@ -22,7 +22,7 @@ export default function AddTeacherForm({ isOpen, onClose, onAdd }) {
   });
 
   const [generated, setGenerated] = useState({ username: "", password: "" });
-console.log(generated)
+  console.log(generated);
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -70,9 +70,7 @@ console.log(generated)
         >
           &times;
         </button>
-        <h2 className="text-lg font-semibold mb-4 text-center">
-          Add Teacher
-        </h2>
+        <h2 className="text-lg font-semibold mb-4 text-center">Add Teacher</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
             className="border rounded px-3 py-2 w-full"
