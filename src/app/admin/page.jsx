@@ -3,7 +3,7 @@ import { useState } from "react";
 import ClassroomCard from "@/components/classroomCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { classroomsData, teachers } from "@/data";
+import { classroomsData, filters, teachers } from "@/data";
 import AddClassroomForm from "@/components/AddClsForm";
 import AddTeacherForm from "@/components/AddTeacherForm";
 import FilterDropdowns from "@/components/filter/options";
@@ -85,6 +85,7 @@ export default function AdminPage() {
           <div className="flex justify-end mb-4">
             <Button onClick={() => setShowAddTeacher(true)}>Add Teacher</Button>
           </div>
+
           {teachersData && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-6">
               {teachersData.map((teacher, index) => (

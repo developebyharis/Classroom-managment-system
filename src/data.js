@@ -44,3 +44,15 @@ export const classroomsData = [
 
 
 export const teachers = ["All Teachers", "Ali", "Sara", "John"];
+
+
+export const filters = [
+  {
+    tagName: "Department",
+    options: ["Computer Science", "Software Engineering"],
+  },
+ {
+  tagName: "Semester",
+  options: ["1", "2", "3", "4"]
+ }
+];
