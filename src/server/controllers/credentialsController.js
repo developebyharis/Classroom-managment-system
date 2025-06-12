@@ -18,15 +18,26 @@ export async function getCredentials(req) {
   }
 }
 
-
-export async function createCredentials(req) {
-
+export async function createCredentials(req, res) {
+  try {
+    const body = await req.json();
+    console.log("body", body);
+    const { username, password } = body;
+    await db.query(
+      `INSERT INTO credentials (username, password, role) VALUES ("${username}", "${password}", "Teacher")`
+    );
+    return res.status(200);
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Internal Server Error",
+        error: error.message,
+      }),
+      { status: 500 }
+    );
+  }
 }
-export async function updateCredentials(req) {
+export async function updateCredentials(req) {}
 
-}
-
-export async function deleteCredentials(req) {
-  
-}
-
+export async function deleteCredentials(req) {}
