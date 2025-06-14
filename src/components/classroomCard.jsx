@@ -1,3 +1,5 @@
+"use client"
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -8,8 +10,13 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Clock, User, GraduationCap, Users, Building } from "lucide-react";
-
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
 export default function ClassroomCard({ classroom }) {
+  const pathname = usePathname();
+  const session = useSession();
+// console.log(session.data)
   const getStatusColor = (status) => {
     switch (status.toLowerCase().trim()) {
       case "available":
@@ -99,6 +106,9 @@ export default function ClassroomCard({ classroom }) {
             </p>
           </div>
         </div>
+        {pathname === "/teacher" && session.data.user.role === "teacher" &&
+        <Button className={"w-full"}>Book</Button>
+}
       </CardContent>
     </Card>
   );

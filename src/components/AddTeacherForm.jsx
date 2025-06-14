@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import FilterDropdowns from "./filter/options";
+import { useClassroom } from "@/hooks/useClassroom";
+import axios from "axios";
 
 // Helper to generate a random string of up to 8 characters
 function generateRandomString(length = 8) {
@@ -19,16 +22,30 @@ export default function AddTeacherForm({ isOpen, onClose, onAdd }) {
     department: "",
     section: "",
     semester: "",
+    username: "",
+    password: "",
   });
 
-  const [generated, setGenerated] = useState({ username: "", password: "" });
-  console.log(generated);
+  const { classroom, loading } = useClassroom();
+  const [department, setDepartment] = useState([]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (!loading) {
+      const dep = classroom.data.department;
+      const mappedDep = dep.map((depar) => depar.department_name);
+      setDepartment(mappedDep);
+    } else {
+      console.log("loading..");
+    }
+  }, [classroom]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const username =
       form.name.replace(/\s+/g, "").toLowerCase().slice(0, 5) +
       generateRandomString(3);
@@ -39,12 +56,22 @@ export default function AddTeacherForm({ isOpen, onClose, onAdd }) {
       department: form.department.split(",").map((d) => d.trim()),
       section: form.section.split(",").map((s) => s.trim()),
       semester: form.semester.split(",").map((s) => s.trim()),
-      username,
-      password,
+      username: username,
+      password: password,
     };
+    console.log(teacherData);
 
-    setGenerated({ username, password });
     onAdd(teacherData);
+    try {
+      const res = await axios.post("/api/teacher", teacherData, {
+        header: "Content-Type : application/json",
+      });
+      if (res.ok) {
+        alert("Teacher Added successfully");
+      }
+    } catch (err) {
+      console.log(err);
+    }
 
     setForm({
       name: "",
@@ -53,6 +80,8 @@ export default function AddTeacherForm({ isOpen, onClose, onAdd }) {
       department: "",
       section: "",
       semester: "",
+      username: "",
+      password: "",
     });
     onClose();
   };
@@ -97,27 +126,25 @@ export default function AddTeacherForm({ isOpen, onClose, onAdd }) {
             onChange={handleChange}
             required
           />
-          <input
-            className="border rounded px-3 py-2 w-full"
-            name="department"
-            placeholder="Department(s) (comma separated)"
+          <FilterDropdowns
+            name={"Department"}
+            optionValue={department}
             value={form.department}
-            onChange={handleChange}
-            required
-          />
-          <input
-            className="border rounded px-3 py-2 w-full"
-            name="section"
-            placeholder="Section(s) (comma separated)"
-            value={form.section}
-            onChange={handleChange}
-            required
+            onChange={(val) => setForm({ ...form, department: val })}
           />
           <input
             className="border rounded px-3 py-2 w-full"
             name="semester"
             placeholder="Semester(s) (comma separated)"
             value={form.semester}
+            onChange={handleChange}
+            required
+          />
+          <input
+            className="border rounded px-3 py-2 w-full"
+            name="section"
+            placeholder="section(s) (comma separated)"
+            value={form.section}
             onChange={handleChange}
             required
           />

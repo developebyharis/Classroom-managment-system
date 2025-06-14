@@ -2,11 +2,11 @@ import { createCredentials, getCredentials } from "@/server/controllers/credenti
 
 
 
-export async function GET(req) {
+export async function GET() {
     return await getCredentials();
 }
 
 
 export async function POST(req) {
-    return await createCredentials();
+    return await createCredentials(req);
 }

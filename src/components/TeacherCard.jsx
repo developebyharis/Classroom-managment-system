@@ -4,12 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Phone,
@@ -25,13 +20,25 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useTeacher } from "@/hooks/useTeacher";
 
-export default function TeacherCard({ teacher, onView, onEdit, onDelete }) {
+export default function TeacherCard({
+  teacher,
+  onView,
+  onEdit,
+  onDelete,
+  dep,
+}) {
+  console.log(dep);
   if (!teacher) {
     console.error("TeacherCard: 'teacher' prop is undefined or null.");
     return null;
   }
+  const matchedDepartment = dep?.find((d) => d.id === teacher.department_id);
+ const departments = matchedDepartment ? [matchedDepartment.department_name] : [];
 
+
+  console.log(departments);
   const getDepartmentColor = (department) => {
     if (!department) return "bg-muted text-muted-foreground";
     const dep = Array.isArray(department) ? department[0] : department;
@@ -52,12 +59,6 @@ export default function TeacherCard({ teacher, onView, onEdit, onDelete }) {
         return "bg-gray-100 text-gray-800";
     }
   };
-
-  const departments = Array.isArray(teacher?.department)
-    ? teacher.department
-    : teacher?.department
-    ? [teacher.department]
-    : [];
 
   const sections = Array.isArray(teacher?.section)
     ? teacher.section
@@ -83,7 +84,7 @@ export default function TeacherCard({ teacher, onView, onEdit, onDelete }) {
             <CardTitle className="text-base font-semibold text-gray-900">
               {teacher.name || "N/A"}
             </CardTitle>
-            <p className="text-xs text-gray-500">Faculty Member</p>
+            <p className="text-xs text-gray-500">Teacher</p>
           </div>
         </div>
 
@@ -120,7 +121,7 @@ export default function TeacherCard({ teacher, onView, onEdit, onDelete }) {
           <InfoRow
             icon={Phone}
             label="Mobile"
-            value={teacher.mobile || "N/A"}
+            value={teacher.phone || "N/A"}
           />
           <InfoRow icon={Mail} label="Email" value={teacher.email || "N/A"} />
         </div>
@@ -132,7 +133,7 @@ export default function TeacherCard({ teacher, onView, onEdit, onDelete }) {
             <LabelWithIcon icon={Building} label="Department" />
             <div className="flex flex-wrap gap-1 mt-1">
               {departments.length > 0 ? (
-                departments.map((dep, i) => (
+                departments?.map((dep, i) => (
                   <Badge
                     key={i}
                     className={`text-xs font-medium px-2 py-0.5 ${getDepartmentColor(
@@ -143,8 +144,12 @@ export default function TeacherCard({ teacher, onView, onEdit, onDelete }) {
                   </Badge>
                 ))
               ) : (
-                <Badge className="text-xs font-medium bg-gray-100 text-gray-800 border-0">
-                  No Dept.
+                <Badge
+                  className={`text-xs font-medium px-2 py-0.5 ${getDepartmentColor(
+                    departments
+                  )} border-0`}
+                >
+                  {departments}
                 </Badge>
               )}
             </div>

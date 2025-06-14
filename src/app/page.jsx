@@ -19,8 +19,8 @@ export default function Home() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
 
-  console.log("Selected Department:", selectedDepartment);
-  console.log("Selected Status:", selectedStatus);
+  // console.log("Selected Department:", selectedDepartment);
+  // console.log("Selected Status:", selectedStatus);
 
   const handleFilterChange = (tag, value) => {
     if (tag === "Department") setSelectedDepartment(value);

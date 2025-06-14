@@ -1,4 +1,4 @@
-import { db } from "@/server/db/connectDb";
+import { db } from "@/lib/connectDb";
 
 export async function getCredentials(req) {
   try {
@@ -21,7 +21,7 @@ export async function getCredentials(req) {
 export async function createCredentials(req, res) {
   try {
     const body = await req.json();
-    console.log("body", body);
+    // console.log("body", body);
     const { username, password } = body;
     await db.query(
       `INSERT INTO credentials (username, password, role) VALUES ("${username}", "${password}", "Teacher")`

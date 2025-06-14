@@ -21,7 +21,7 @@ export async function middleware(req) {
   }
 
   if (token.role !== matched.role) {
-    const unauthorizedUrl = new URL("/unauthorized", req.url);
+    const unauthorizedUrl = new URL("/login", req.url);
     return NextResponse.redirect(unauthorizedUrl);
   }
   return NextResponse.next();
