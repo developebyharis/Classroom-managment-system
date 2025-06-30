@@ -1,4 +1,4 @@
-import { getCredentials } from "@/helper/getCredentials";
+import { getCredentials } from "@/helper/getData";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOption = {

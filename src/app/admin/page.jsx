@@ -1,4 +1,4 @@
-import { getData } from "@/helper/getCredentials";
+import { getData } from "@/helper/getData";
 import AdminDashboardClient from "./AdminDashboardClient";
 
 export default async function AdminPage() {

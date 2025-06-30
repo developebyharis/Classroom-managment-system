@@ -1,7 +1,7 @@
 import ClassroomFilter from "@/components/ClassroomFilter";
 import { EmptyState } from "@/components/layout/PageLayout";
 import { Search } from "lucide-react";
-import { getData } from "@/helper/getCredentials";
+import { getData } from "@/helper/getData";
 
 export default async function Home() {
   const { classroom, department, teacher, booking } = await getData();

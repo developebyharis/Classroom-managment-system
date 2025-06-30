@@ -13,8 +13,8 @@ export default function TeacherDashboardClient({ classroom, department, teacher,
   const [selectedClassroomId, setSelectedClassroomId] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState("All Department");
   const [selectedStatus, setSelectedStatus] = useState("Available");
+  const [activeTab, setActiveTab] = useState("yourBookings");
 
-  // For demo, just use all teachers and departments
   const teachers = teacher;
   const depList = department;
 
@@ -50,86 +50,81 @@ export default function TeacherDashboardClient({ classroom, department, teacher,
   };
 
   return (
-    <div className="min-h-screen w-full grid md:grid-cols-[220px_1fr] bg-muted/40">
-      <aside className="hidden md:block bg-white border-r px-4 py-6 space-y-4">
-        <h1 className="text-2xl font-bold">Faculty</h1>
-        <nav className="space-y-1 text-sm">
-          <a className="block px-2 py-1 rounded hover:bg-muted" href="#stats">
-            Dashboard
-          </a>
-          <a
-            className="block px-2 py-1 rounded hover:bg-muted"
-            href="#bookings"
-          >
-            Bookings
-          </a>
-          <a
-            className="block px-2 py-1 rounded hover:bg-muted"
-            href="#available"
-          >
-            Classrooms
-          </a>
-        </nav>
+    <div className="min-h-screen bg-white flex flex-col md:flex-row">
+      {/* Sidebar */}
+      <aside className="w-full md:w-56 bg-white border-r flex-shrink-0 sticky top-0 z-20 h-16 md:h-auto md:min-h-screen flex md:flex-col items-center md:items-start px-4 py-2 md:py-8 gap-2 md:gap-6 shadow-sm">
+        <span className="text-xl font-bold text-gray-900 tracking-tight hidden md:block mb-8">Faculty</span>
+        <Button
+          variant={activeTab === "yourBookings" ? "default" : "ghost"}
+          className="w-full justify-start"
+          onClick={() => setActiveTab("yourBookings")}
+        >
+          Bookings
+        </Button>
+        <Button
+          variant={activeTab === "availableClassrooms" ? "default" : "ghost"}
+          className="w-full justify-start"
+          onClick={() => setActiveTab("availableClassrooms")}
+        >
+          Classrooms
+        </Button>
       </aside>
 
-      <main className="flex flex-col gap-6 p-6">
-        <section id="stats" className="grid sm:grid-cols-3 gap-4">
-          <Card>
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-10">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Teacher Dashboard</h1>
+          <p className="text-gray-500">View your bookings and available classrooms.</p>
+        </div>
+
+        {/* Stats */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <Card className="bg-white border border-gray-100 shadow-none">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Classrooms
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Total Classrooms</CardTitle>
             </CardHeader>
-            <CardContent className="text-3xl font-bold">
+            <CardContent className="text-3xl font-semibold text-gray-900">
               {classroom.length}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white border border-gray-100 shadow-none">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Available</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Available</CardTitle>
             </CardHeader>
-            <CardContent className="text-3xl font-bold">
+            <CardContent className="text-3xl font-semibold text-gray-900">
               {selectedStatus === "Available" ? filteredAvailableCount : availableCount}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white border border-gray-100 shadow-none">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Your Bookings
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Your Bookings</CardTitle>
             </CardHeader>
-            <CardContent className="text-3xl font-bold">
+            <CardContent className="text-3xl font-semibold text-gray-900">
               {booking?.length || 0}
             </CardContent>
           </Card>
         </section>
 
-        <section className="bg-white rounded-lg shadow-sm p-4" id="bookings">
-          <Tabs defaultValue="yourBookings" className="w-full">
-            <TabsList className="flex w-full justify-center mb-4">
-              <TabsTrigger value="yourBookings" className="flex-1">
-                Your&nbsp;Bookings
-              </TabsTrigger>
-              <TabsTrigger value="availableClassrooms" className="flex-1">
-                Available&nbsp;Classrooms
-              </TabsTrigger>
+        {/* Tabs */}
+        <div className="bg-white/80 rounded-2xl border border-gray-100 p-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full max-w-md mx-auto flex justify-center mb-6 bg-muted rounded-lg p-1">
+              <TabsTrigger value="yourBookings" className="flex-1">Your Bookings</TabsTrigger>
+              <TabsTrigger value="availableClassrooms" className="flex-1">Available Classrooms</TabsTrigger>
             </TabsList>
 
             <TabsContent value="yourBookings">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">
-                  Your Booked Classrooms
-                </h2>
+                <h2 className="text-xl font-semibold text-gray-900">Your Booked Classrooms</h2>
               </div>
-
               {booking?.length === 0 ? (
-                <Card>
+                <Card className="bg-gray-50 border-0">
                   <CardContent className="py-8 text-center text-gray-500">
                     No classrooms booked yet.
                   </CardContent>
                 </Card>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {booking?.map((b, idx) => {
                     const classroomObj = classroom?.find(
                       (c) => c.id === b.classroom_id
@@ -165,17 +160,17 @@ export default function TeacherDashboardClient({ classroom, department, teacher,
                   name="Status"
                 />
               </div>
-              <h2 className="text-xl font-semibold mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Available Classrooms
               </h2>
               {filteredClassrooms.length === 0 ? (
-                <Card>
+                <Card className="bg-gray-50 border-0">
                   <CardContent className="py-8 text-center text-gray-500">
                     No classrooms available.
                   </CardContent>
                 </Card>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filteredClassrooms.map((cls) => {
                     const bookingData = cls.booking_id 
                       ? booking?.find(b => b.id === cls.booking_id)
@@ -198,22 +193,23 @@ export default function TeacherDashboardClient({ classroom, department, teacher,
               )}
             </TabsContent>
           </Tabs>
-        </section>
-      </main>
-
-      {isOpenForm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <ClsBookingForm
-              onSubmit={handleBookClassroom}
-              isOpen={isOpenForm}
-              setIsOpen={setOpenForm}
-              clsId={selectedClassroomId}
-              onClose={() => setOpenForm(false)}
-            />
-          </div>
         </div>
-      )}
+
+        {/* Booking Modal */}
+        {isOpenForm && (
+          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+              <ClsBookingForm
+                onSubmit={handleBookClassroom}
+                isOpen={isOpenForm}
+                setIsOpen={setOpenForm}
+                clsId={selectedClassroomId}
+                onClose={() => setOpenForm(false)}
+              />
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 } 

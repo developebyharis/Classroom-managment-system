@@ -1,4 +1,4 @@
-import { getData } from "@/helper/getCredentials";
+import { getData } from "@/helper/getData";
 import TeacherDashboardClient from "./TeacherDashboardClient";
 import { db } from "@/lib/connectDb";
 
