@@ -14,7 +14,7 @@ export function useTeacher() {
   async function getTeacher() {
     try {
       setLoading(true);
-      const res = await axios.get("/api/teacher");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/teacher`);
       const teacherData = res.data.teacher;
       if (session?.user?.role === "Teacher") {
         const matchedTeach = teacherData.teacher.find(
@@ -54,7 +54,7 @@ export function useTeacher() {
   async function addTeacher(data) {
     try {
       setLoading(true);
-      const res = await axios.post("/api/teacher", data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/teacher`, data, {
         header: "Content-Type: application/json",
       });
       if (res.ok) await getTeacher();
@@ -66,7 +66,7 @@ export function useTeacher() {
   async function updateTeacher(data) {
     try {
       setLoading(true);
-      const res = await axios.post("/api/teacher", data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/teacher`, data, {
         header: "Content-Type: application/json",
       });
       if (res.ok) await getTeacher();
@@ -79,7 +79,7 @@ export function useTeacher() {
   async function deleteTeacher(id) {
     try {
       setLoading(true);
-      const res = await axios.delete("/api/teacher", id);
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/teacher`, id);
       if (res.ok) await getTeacher();
       setLoading(false);
     } catch (err) {

@@ -37,7 +37,7 @@ export default function AddClassroomForm({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/classroom", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classroom`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

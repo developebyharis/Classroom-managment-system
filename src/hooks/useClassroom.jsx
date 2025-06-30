@@ -11,7 +11,7 @@ export function useClassroom() {
 
   async function getClassroom() {
     try {
-      const res = await axios.get("/api/classroom");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/classroom`);
       setClassroom(res.data);
     } catch (err) {
       setError(err);
@@ -29,7 +29,7 @@ export function useClassroom() {
     console.log("hook id", id)
      try {
       setLoading(true);
-       const res = await axios.get(`/api/classroom/${id}`, {
+       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/classroom/${id}`, {
         headers: { "Content-Type": "application/json" }, 
       });
       setClassroomById(res.data);
@@ -43,7 +43,7 @@ export function useClassroom() {
   async function addClassroom(data) {
     try {
       setLoading(true);
-      const res = await axios.post("/api/classroom", data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/classroom`, data, {
         header: "Content-Type: application/json",
       });
       if (res.ok) await getClassroom();
@@ -55,7 +55,7 @@ export function useClassroom() {
   async function updateClassroom(data) {
     try {
       setLoading(true);
-      const res = await axios.post("/api/classroom", data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/classroom`, data, {
         header: "Content-Type: application/json",
       });
       if (res.ok) await getClassroom();
@@ -68,7 +68,7 @@ export function useClassroom() {
   async function deleteClassroom(id) {
     try {
       setLoading(true);
-      const res = await axios.delete("/api/classroom", id);
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/classroom`, id);
       if (res.ok) await getClassroom();
       setLoading(false);
     } catch (err) {

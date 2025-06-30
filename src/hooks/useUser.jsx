@@ -14,7 +14,9 @@ export function useUser() {
   async function getUser() {
     try {
       setLoading(true);
-      const { data: users } = await axios.get("/api/credentials");
+      const { data: users } = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/credentials`
+      );
       const matched = users.data[0].find((u) => u.id === session?.user?.id);
       setUser(matched);
     } catch (err) {
@@ -26,7 +28,6 @@ export function useUser() {
   useEffect(() => {
     getUser();
   }, [status, session]);
-
 
   return {
     user,

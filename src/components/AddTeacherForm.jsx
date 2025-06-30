@@ -62,7 +62,7 @@ export default function AddTeacherForm({ isOpen, onClose }) {
     };
 
     try {
-      const res = await axios.post("/api/teacher", teacherData, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/teacher`, teacherData, {
         header: "Content-Type : application/json",
       });
       if (res.ok) {

@@ -10,7 +10,7 @@ export function useBooking() {
 
   async function getBookings() {
     try {
-      const res = await axios.get("/api/booking");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/booking`);
       setBooking(res.data);
     } catch (err) {
       setError(err);
@@ -26,7 +26,7 @@ export function useBooking() {
   async function addBooking(data) {
     try {
       setLoading(true);
-      const res = await axios.post("/api/booking", data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/booking`, data, {
         header: "Content-Type: application/json",
       });
       if (res.ok) await getBookings();
@@ -38,7 +38,7 @@ export function useBooking() {
   async function updateBooking(data) {
     try {
       setLoading(true);
-      const res = await axios.post("/api/booking", data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/booking`, data, {
         header: "Content-Type: application/json",
       });
       if (res.ok) await getBookings();
@@ -52,7 +52,7 @@ export function useBooking() {
     console.log("delete id", id);
     try {
       setLoading(true);
-      const res = await axios.delete("/api/booking", {
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/booking`, {
         data: { id },
         headers: { "Content-Type": "application/json" }, 
       });
@@ -67,7 +67,7 @@ export function useBooking() {
   async function unbookBooking(bookingId) {
     try {
       setLoading(true);
-      const res = await axios.patch("/api/booking", {
+      const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/booking`, {
         bookingId,
         status: "Cancelled",
       });
