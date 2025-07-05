@@ -1,34 +1,13 @@
-import React from "react";
+"use server";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, User, GraduationCap, BookOpen, X } from "lucide-react";
-import { useBooking } from "@/hooks/useBooking";
+import { Clock, MapPin, GraduationCap, BookOpen, X } from "lucide-react";
+import { formatTime, getStatusColor } from "@/lib/utils";
+import { deleteBooking } from "@/lib/server/booking";
 
-export default function BookingCard({ booking, classroom, teacher }) {
-  const { deleteBooking } = useBooking();
-  const formatTime = (timeString) => {
-    if (!timeString) return "N/A";
-    const [hours, minutes] = timeString.split(":");
-    const hour = parseInt(hours);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    const displayHour = hour % 12 || 12;
-    return `${displayHour}:${minutes} ${ampm}`;
-  };
-
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "booked":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "cancelled":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
+export default async function BookingCard({ booking, classroom }) {
   const handleUnbook = async () => {
     await deleteBooking(booking.id);
   };

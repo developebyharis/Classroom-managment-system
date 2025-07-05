@@ -2,10 +2,12 @@ import { createTeacher, deleteTeacher, getTeacher, updateTeacher } from "./contr
 
 
 export async function POST(req) {
-    return await createTeacher(req);
+  return await createTeacher(req);
+  
 }
 
 export async function GET() {
-    return await getTeacher()
+  return await getTeacher();
+  
 }
 

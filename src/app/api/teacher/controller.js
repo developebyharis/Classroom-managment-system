@@ -18,55 +18,56 @@ export async function createTeacher(req) {
       semester,
     } = body;
 
-    await db.query(
-      `INSERT IGNORE INTO credentials (username, password, role)
-       VALUES (?, ?, ?)`,
-      [username, password, "Teacher"]
-    );
-    const [[{ id: credentialsId }]] = await db.query(
-      `SELECT id FROM credentials WHERE username = ? AND password = ? AND role = ?`,
-      [username, password, "Teacher"]
-    );
+    // Insert credentials if not exists
+    await db`
+      INSERT INTO credentials (username, password, role)
+      VALUES (${username}, ${password}, 'Teacher')
+      ON CONFLICT (username) DO NOTHING
+    `;
+
+    const credentials = await db`
+      SELECT id FROM credentials WHERE username = ${username} AND password = ${password} AND role = 'Teacher'
+    `;
+    const credentialsId = credentials[0]?.id;
 
     const depName = department[0];
-    await db.query(
-      `INSERT IGNORE INTO departments (department_name) VALUES (?)`,
-      [depName]
-    );
-    const [[{ id: departmentId }]] = await db.query(
-      `SELECT id FROM departments WHERE department_name = ?`,
-      [depName]
-    );
+    await db`
+      INSERT INTO department (department_name)
+      VALUES (${depName})
+      ON CONFLICT (department_name) DO NOTHING
+    `;
+    const departments = await db`
+      SELECT id FROM department WHERE department_name = ${depName}
+    `;
+    const departmentId = departments[0]?.id;
 
-    await db.query(
-      `INSERT IGNORE INTO courses (course_name, course_code)
-       VALUES (?, ?)`,
-      [course, course_code]
-    );
-    const [[{ id: courseId }]] = await db.query(
-      `SELECT id FROM courses WHERE course_name = ? AND course_code = ?`,
-      [course, course_code]
-    );
-    
+    await db`
+      INSERT INTO courses (course_name, course_code)
+      VALUES (${course}, ${course_code})
+      ON CONFLICT (course_code) DO NOTHING
+    `;
+    const courses = await db`
+      SELECT id FROM courses WHERE course_name = ${course} AND course_code = ${course_code}
+    `;
+    const courseId = courses[0]?.id;
 
     const semesterString = semester.join(",");
-    const sectionString  = section.join(",");
+    const sectionString = section.join(",");
 
-    await db.query(
-      `INSERT INTO teacher
-       (name, email, phone, semester, section, course_id, department_id, credentials_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,         
-      [
-        name,
-        email,
-        mobile,
-        semesterString,
-        sectionString, 
-        courseId || null,
-        departmentId,
-        credentialsId
-      ]
-    );
+    await db`
+      INSERT INTO teacher
+      (name, email, phone, semester, section, course_id, department_id, credentials_id)
+      VALUES (
+        ${name},
+        ${email},
+        ${mobile},
+        ${semesterString},
+        ${sectionString},
+        ${courseId || null},
+        ${departmentId},
+        ${credentialsId}
+      )
+    `;
 
     return Response.json(
       { success: true, message: "Teacher created successfully" },
@@ -83,19 +84,17 @@ export async function createTeacher(req) {
 
 export async function getTeacher() {
   try {
-    const [teacher] = await db.query(`SELECT * FROM teacher`);
-    const [dep] = await db.query(
-      `SELECT * FROM departments WHERE id IN (SELECT DISTINCT department_id FROM teacher)`
-    );
-     const [course] = await db.query(
-      `SELECT * FROM courses WHERE id IN (SELECT DISTINCT course_id FROM teacher)`
-    );
+    const teacher = await db`SELECT * FROM teacher`;
+    const dep = await db`
+      SELECT * FROM department WHERE id IN (SELECT DISTINCT department_id FROM teacher)
+    `;
+    const course = await db`
+      SELECT * FROM courses WHERE id IN (SELECT DISTINCT course_id FROM teacher)
+    `;
 
     return new Response(
       JSON.stringify({ success: true, teacher: { teacher, dep, course } }),
-      {
-        status: 200,
-      }
+      { status: 200 }
     );
   } catch (error) {
     return new Response(
@@ -109,23 +108,4 @@ export async function getTeacher() {
   }
 }
 
-export async function updateTeacher(req) {
-  try {
-    const body = req.json();
-    await db.query(``);
-
-    return new Response({ success: true }, { status: 200 });
-  } catch (err) {
-    return new Response({ message: err.message }, { status: 500 });
-  }
-}
-export async function deleteTeacher(req) {
-  try {
-    const id = req.body;
-    await db.query(``);
-
-    return new Response({ success: true }, { status: 200 });
-  } catch (err) {
-    return new Response({ message: err.message }, { status: 500 });
-  }
-}
+// You can similarly refactor updateTeacher and deleteTeacher for Neon as needed.

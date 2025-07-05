@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useClassroom } from "@/hooks/useClassroom";
+import { useTeacher } from "@/hooks/useTeacher";
 
 export default function AddClassroomForm({
   isOpen,
@@ -14,6 +15,8 @@ export default function AddClassroomForm({
   });
   const { classroom, loading } = useClassroom();
   const [department, setDepartment] = useState([]);
+
+  const { addClassroom } = useClassroom();
   useEffect(() => {
     if (!loading) {
       const dep = classroom.data.department;
@@ -36,25 +39,9 @@ export default function AddClassroomForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("f",form)
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/classroom`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (onAdd) onAdd(data);
-        setForm({
-          classroomName: "",
-          department: "",
-        });
-        setNewDepartment(false);
-        onClose();
-      } else {
-        const errorData = await res.json();
-        alert("Failed to add classroom: " + (errorData.message || res.status));
-      }
+      await addClassroom(form);
     } catch (err) {
       alert("Error: " + err.message);
     }

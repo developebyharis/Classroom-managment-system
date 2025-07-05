@@ -6,11 +6,12 @@ export default async function TeacherDashboardPage() {
    const { classroom, department, teacher, booking } = await getData();
  
   return (
-    <TeacherDashboardClient
-      classroom={classroom}
-      department={department}
-      teacher={teacher}
-      booking={booking.data.booking}
-    />
+    // <TeacherDashboardClient
+    //   classroom={classroom}
+    //   department={department}
+    //   teacher={teacher}
+    //   booking={booking.data.booking}
+    // />
+<p>Hello</p>
   );
 }

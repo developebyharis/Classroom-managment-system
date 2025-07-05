@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export function useUser() {
   const { data: session, status } = useSession();
-
+// console.log("useUser session", session, status);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,6 +17,7 @@ export function useUser() {
       const { data: users } = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/credentials`
       );
+      console.log("useUser users", users);
       const matched = users.data[0].find((u) => u.id === session?.user?.id);
       setUser(matched);
     } catch (err) {

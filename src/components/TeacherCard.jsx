@@ -1,3 +1,5 @@
+"use client"
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -20,14 +22,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useTeacher } from "@/hooks/useTeacher";
+import { getDepartmentColor } from "@/lib/utils";
 
-export default function TeacherCard({
+export default  function TeacherCard({
   teacher,
-  onView,
+  // matchedDepartment,
   onEdit,
   onDelete,
-  dep,
+  dep
 }) {
   if (!teacher) {
     console.error("TeacherCard: 'teacher' prop is undefined or null.");
@@ -37,27 +39,8 @@ export default function TeacherCard({
  const departments = matchedDepartment ? [matchedDepartment.department_name] : [];
 
 
-  console.log("d",departments);
-  const getDepartmentColor = (department) => {
-    if (!department) return "bg-muted text-muted-foreground";
-    const dep = Array.isArray(department) ? department[0] : department;
-    switch (dep?.toLowerCase()) {
-      case "computer science":
-        return "bg-blue-100 text-blue-800";
-      case "electrical":
-        return "bg-yellow-100 text-yellow-800";
-      case "mechanical":
-        return "bg-green-100 text-green-800";
-      case "civil":
-        return "bg-purple-100 text-purple-800";
-      case "mathematics":
-        return "bg-pink-100 text-pink-800";
-      case "data science":
-        return "bg-indigo-100 text-indigo-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  // console.log("d",departments);
+  
 
   const sections = Array.isArray(teacher?.section)
     ? teacher.section
@@ -99,10 +82,7 @@ export default function TeacherCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-36">
-            <DropdownMenuItem onClick={() => onView?.(teacher)}>
-              <Eye className="w-4 h-4 mr-2" /> View
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEdit?.(teacher)}>
+            <DropdownMenuItem onClick={() => onEdit(teacher)}>
               <Pencil className="w-4 h-4 mr-2" /> Edit
             </DropdownMenuItem>
             <DropdownMenuItem

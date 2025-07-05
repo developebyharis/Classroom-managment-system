@@ -14,7 +14,7 @@ export function useTeacher() {
   async function getTeacher() {
     try {
       setLoading(true);
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/teacher`);
+      const res = await axios.get(`api/teacher`);
       const teacherData = res.data.teacher;
       if (session?.user?.role === "Teacher") {
         const matchedTeach = teacherData.teacher.find(
@@ -49,13 +49,13 @@ export function useTeacher() {
     if (session?.user?.id) {
       getTeacher();
     }
-  }, [session]);
+  }, [session?.user?.id]);
 
   async function addTeacher(data) {
     try {
       setLoading(true);
       const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/teacher`, data, {
-        header: "Content-Type: application/json",
+        headers: "Content-Type: application/json",
       });
       if (res.ok) await getTeacher();
       setLoading(false);

@@ -1,14 +1,21 @@
 import { deleteClassroom, getClassroom, updateClassroom } from "../controller"
+import { corsOptionsResponse, withCorsHeaders } from "@/lib/utils";
 
-export async function UPDATE(req) {
-  return await updateClassroom(req)
+export async function OPTIONS(request) {
+  return corsOptionsResponse();
 }
 
+export async function UPDATE(req) {
+  const res = await updateClassroom(req);
+  return withCorsHeaders(res);
+}
 
 export async function DELETE(req) {
-  return await deleteClassroom()
+  const res = await deleteClassroom();
+  return withCorsHeaders(res);
 }
 
 export async function GET(req) {
-  return await getClassroom(req)
+  const res = await getClassroom(req);
+  return withCorsHeaders(res);
 }

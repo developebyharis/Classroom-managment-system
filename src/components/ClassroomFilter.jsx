@@ -29,8 +29,8 @@ export default function ClassroomFilter({ initialClassrooms, initialDepartments,
   }) || [];
 
   return (
-    <div>
-      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6 justify-center">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-8 py-8">
+      <div className="flex flex-col md:flex-row md:items-center gap-3 mb-8 justify-center">
         <FilterDropdowns
           optionValue={departmentNames}
           value={selectedDepartment}
@@ -45,11 +45,11 @@ export default function ClassroomFilter({ initialClassrooms, initialDepartments,
         />
       </div>
       {filteredClassrooms.length === 0 ? (
-        <div className="text-center text-gray-500 py-8 border rounded bg-gray-50">
-          No classrooms found matching your filters.
+        <div className="text-center text-gray-400 py-16 text-lg">
+          No classrooms found.
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredClassrooms.map((cls) => {
             const bookingData = cls.booking_id 
               ? initialBookings?.find(b => b.id === cls.booking_id)

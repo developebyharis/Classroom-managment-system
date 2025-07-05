@@ -1,20 +1,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import FilterDropdowns from "./filter/options";
-import { useClassroom } from "@/hooks/useClassroom";
-import axios from "axios";
 import { useTeacher } from "@/hooks/useTeacher";
+import { useDepartments } from "@/hooks/useDepartments";
+import { useCourses } from "@/hooks/useCourses";
 
-function generateRandomString(length = 8) {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return result;
-}
-
-export default function AddTeacherForm({ isOpen, onClose }) {
+export default function EditTeacherForm({ teacher, isOpen, onClose, onSave }) {
   const [form, setForm] = useState({
     name: "",
     mobile: "",
@@ -24,65 +14,78 @@ export default function AddTeacherForm({ isOpen, onClose }) {
     semester: "",
     course: "",
     course_code: "",
-    username: "",
-    password: "",
   });
+  const { updateTeacher } = useTeacher();
+  const { departments, loading: departmentsLoading } = useDepartments();
+  const { courses, loading: coursesLoading } = useCourses();
+  const [matchedDepartment, setMatchedDepartment] = useState(null);
+  const [matchedCourse, setMatchedCourse] = useState({});
 
-  const { classroom, loading } = useClassroom();
-  const [department, setDepartment] = useState([]);
-const {addTeacher} = useTeacher()
+  useEffect(() => {
+    if (teacher?.department_id && departments.length > 0) {
+      const matchDep = departments.find((dept) => dept.id === teacher.department_id);
+      setMatchedDepartment(matchDep.department_name);
+      console.log("Matched Department:", matchDep);
+    }
+  }, [teacher, departments]);
+
+  useEffect(() => {
+    if (teacher?.course_id && courses.length > 0) {
+      const matchCourse = courses.find((course) => course.id === teacher.course_id);
+      console.log("Match Course:", matchCourse);
+      setMatchedCourse(matchCourse);
+      console.log("Matched Course:", matchedCourse);
+    }
+  }, [teacher, courses]);
+
+  useEffect(() => {
+    if (teacher) {
+      setForm({
+        name: teacher.name || "",
+        mobile: teacher.phone || "",
+        email: teacher.email || "",
+        department: matchedDepartment || "",
+        section: Array.isArray(teacher.section)
+          ? teacher.section.join(", ")
+          : teacher.section || "",
+        semester: Array.isArray(teacher.semester)
+          ? teacher.semester.join(", ")
+          : teacher.semester || "",
+        course: matchedCourse.course_name || "",
+        course_code: matchedCourse.course_code || "",
+      });
+    }
+  }, [teacher, matchedDepartment, matchedCourse]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    if (!loading) {
-      const dep = classroom.data.department;
-            console.log("Dep", dep);
-
-      const mappedDep = dep.map((depar) => depar.department_name);
-      console.log("mappedDep", mappedDep);
-      setDepartment(mappedDep);
-    } else {
-      console.log("loading..");
-    }
-  }, [classroom]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const username =
-      form.name.replace(/\s+/g, "").toLowerCase().slice(0, 5) +
-      generateRandomString(3);
-    const password = generateRandomString(8);
-
-    const teacherData = {
+    const updatedData = {
+      ...teacher,
       ...form,
       department: form.department.split(",").map((d) => d.trim()),
       section: form.section.split(",").map((s) => s.trim()),
       semester: form.semester.split(",").map((s) => s.trim()),
-      username: username,
-      password: password,
     };
-
-      await addTeacher(teacherData);
-
-    setForm({
-      name: "",
-      mobile: "",
-      email: "",
-      department: "",
-      course: "",
-      course_code: "",
-      section: "",
-      semester: "",
-      username: "",
-      password: "",
-    });
+    await updateTeacher(updatedData);
+    if (onSave) onSave(updatedData);
     onClose();
   };
 
   if (!isOpen) return null;
+
+  if (departmentsLoading || coursesLoading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+          <div className="text-center">Loading data...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -95,7 +98,7 @@ const {addTeacher} = useTeacher()
         >
           &times;
         </button>
-        <h2 className="text-lg font-semibold mb-4 text-center">Add Teacher</h2>
+        <h2 className="text-lg font-semibold mb-4 text-center">Edit Teacher</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
             className="border rounded px-3 py-2 w-full"
@@ -122,12 +125,15 @@ const {addTeacher} = useTeacher()
             onChange={handleChange}
             required
           />
-          <FilterDropdowns
-            name={"Department"}
-            optionValue={department}
+          <input
+            className="border rounded px-3 py-2 w-full"
+            name="department"
+            placeholder="Department(s) (comma separated)"
             value={form.department}
-            onChange={(val) => setForm({ ...form, department: val })}
+            onChange={handleChange}
+            required
           />
+
           <input
             className="border rounded px-3 py-2 w-full"
             name="semester"
@@ -139,29 +145,30 @@ const {addTeacher} = useTeacher()
           <input
             className="border rounded px-3 py-2 w-full"
             name="course"
-            placeholder="course"
+            placeholder="Courses name(s) (comma separated)"
             value={form.course}
             onChange={handleChange}
             required
           />
           <input
             className="border rounded px-3 py-2 w-full"
-            name="course_code"
-            placeholder="course_code"
+            name="course"
+            placeholder="Courses code(s) (comma separated)"
             value={form.course_code}
             onChange={handleChange}
             required
           />
+
           <input
             className="border rounded px-3 py-2 w-full"
             name="section"
-            placeholder="section(s) (comma separated)"
+            placeholder="Section(s) (comma separated)"
             value={form.section}
             onChange={handleChange}
             required
           />
           <Button type="submit" className="w-full mt-2">
-            Add Teacher
+            Save
           </Button>
         </form>
       </div>
