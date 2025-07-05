@@ -88,8 +88,11 @@ export function useTeacher() {
   }
   async function deleteTeacher(id) {
     try {
+      showLoading("Deleteing teacher data...");
       setLoading(true);
-      const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/teacher`, id);
+      const res = await axios.delete(`api/teacher`, {data: {id}}, {
+        headers: "Content-Type: application/json",
+      });
       if (res.ok) {
         await getTeacher();
         success("Teacher deleted successfully");

@@ -10,20 +10,20 @@ import { Plus } from "lucide-react";
 import EditTeacherForm from "@/components/EditTeacherForm";
 import useClassroomFilters from "@/hooks/useClassroomFilters";
 import ClassroomWithFilters from "@/components/ClassroomWithFilters";
-
+import { useTeacher } from "@/hooks/useTeacher";
 export default function AdminDashboardClient({
   classroom,
   department,
   teacher,
   matchedDepartment,
   booking,
-  bookingTeachers,
 }) {
   const [showAddClassroom, setShowAddClassroom] = useState(false);
   const [showAddTeacher, setShowAddTeacher] = useState(false);
   const [activeTab, setActiveTab] = useState("classrooms");
   const [editTeacher, setEditTeacher] = useState(null);
 
+  const {deleteTeacher} = useTeacher()
   const totalClassrooms = classroom.length;
   const totalTeachers = teacher.length;
   const {
@@ -52,6 +52,7 @@ export default function AdminDashboardClient({
       icon: "👨‍🏫"
     }
   ];
+ 
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <div className="flex-1 flex overflow-hidden">
@@ -65,7 +66,6 @@ export default function AdminDashboardClient({
               Manage classrooms and teachers.
             </p>
           </div>
-
           <section className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
             {statsData.map((stat, index) => (
               <Card key={index} className="bg-white border border-gray-100 shadow-none">
@@ -123,6 +123,7 @@ export default function AdminDashboardClient({
                         teacher={t}
                         dep={matchedDepartment}
                         onEdit={(teacher) => setEditTeacher(teacher)}
+                        onDelete={() => deleteTeacher(t.id)}
                       />
                     ))}
                   </div>

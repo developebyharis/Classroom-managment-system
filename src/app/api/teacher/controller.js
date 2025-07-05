@@ -108,4 +108,20 @@ export async function getTeacher() {
   }
 }
 
+export async function deleteTeacher(req) {
+  try {
+    const { id } = await req.json();
+    await db`DELETE FROM teacher WHERE id = ${id}`;
+    return Response.json(
+      { success: true, message: "Teacher deleted" },
+      { status: 200 }
+    );
+  } catch (error) {
+    return Response.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
+  }
+}
+
 // You can similarly refactor updateTeacher and deleteTeacher for Neon as needed.

@@ -11,3 +11,6 @@ export async function GET() {
   
 }
 
+export async function DELETE(req) {
+  return await deleteTeacher(req);
+}
