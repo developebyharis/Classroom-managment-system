@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useTeacher } from "@/hooks/useTeacher";
 import { useDepartments } from "@/hooks/useDepartments";
 import { useCourses } from "@/hooks/useCourses";
+import { useSonnerToast } from "@/hooks/useSonnerToast";
 
 export default function EditTeacherForm({ teacher, isOpen, onClose, onSave }) {
   const [form, setForm] = useState({
@@ -20,6 +21,7 @@ export default function EditTeacherForm({ teacher, isOpen, onClose, onSave }) {
   const { courses, loading: coursesLoading } = useCourses();
   const [matchedDepartment, setMatchedDepartment] = useState(null);
   const [matchedCourse, setMatchedCourse] = useState({});
+  const { success, error: showError, loading: showLoading } = useSonnerToast();
 
   useEffect(() => {
     if (teacher?.department_id && departments.length > 0) {
@@ -70,9 +72,15 @@ export default function EditTeacherForm({ teacher, isOpen, onClose, onSave }) {
       section: form.section.split(",").map((s) => s.trim()),
       semester: form.semester.split(",").map((s) => s.trim()),
     };
-    await updateTeacher(updatedData);
-    if (onSave) onSave(updatedData);
-    onClose();
+    try {
+      showLoading("Updating teacher...");
+      await updateTeacher(updatedData);
+      success("Teacher updated successfully");
+      if (onSave) onSave(updatedData);
+      onClose();
+    } catch (err) {
+      showError("Failed to update teacher");
+    }
   };
 
   if (!isOpen) return null;

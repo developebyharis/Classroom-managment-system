@@ -4,6 +4,8 @@ import FilterDropdowns from "./filter/options";
 import { useClassroom } from "@/hooks/useClassroom";
 import axios from "axios";
 import { useTeacher } from "@/hooks/useTeacher";
+import { useSonnerToast } from "@/hooks/useSonnerToast";
+import { useDepartments } from "@/hooks/useDepartments";
 
 function generateRandomString(length = 8) {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -28,25 +30,14 @@ export default function AddTeacherForm({ isOpen, onClose }) {
     password: "",
   });
 
-  const { classroom, loading } = useClassroom();
-  const [department, setDepartment] = useState([]);
-const {addTeacher} = useTeacher()
+  const { departments } = useDepartments()
+  const { addTeacher } = useTeacher()
+  const { success, error: showError, loading: showLoading } = useSonnerToast();
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    if (!loading) {
-      const dep = classroom.data.department;
-            console.log("Dep", dep);
-
-      const mappedDep = dep.map((depar) => depar.department_name);
-      console.log("mappedDep", mappedDep);
-      setDepartment(mappedDep);
-    } else {
-      console.log("loading..");
-    }
-  }, [classroom]);
+console.log(departments)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,21 +56,26 @@ const {addTeacher} = useTeacher()
       password: password,
     };
 
+    try {
+      showLoading("Adding teacher...");
       await addTeacher(teacherData);
-
-    setForm({
-      name: "",
-      mobile: "",
-      email: "",
-      department: "",
-      course: "",
-      course_code: "",
-      section: "",
-      semester: "",
-      username: "",
-      password: "",
-    });
-    onClose();
+      success("Teacher added successfully");
+      setForm({
+        name: "",
+        mobile: "",
+        email: "",
+        department: "",
+        course: "",
+        course_code: "",
+        section: "",
+        semester: "",
+        username: "",
+        password: "",
+      });
+      onClose();
+    } catch (err) {
+      showError("Failed to add teacher");
+    }
   };
 
   if (!isOpen) return null;
@@ -124,7 +120,7 @@ const {addTeacher} = useTeacher()
           />
           <FilterDropdowns
             name={"Department"}
-            optionValue={department}
+            optionValue={departments.map((dep) => dep.department_name)}
             value={form.department}
             onChange={(val) => setForm({ ...form, department: val })}
           />

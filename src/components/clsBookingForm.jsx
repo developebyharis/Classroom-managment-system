@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { useTeacher } from "@/hooks/useTeacher";
 import { useBooking } from "@/hooks/useBooking";
+import { useSonnerToast } from "@/hooks/useSonnerToast";
 
 export default function ClsBookingForm({ isOpen, setIsOpen, clsId }) {
   const { teacher: matchedTe, loading, error } = useTeacher();
@@ -20,6 +21,7 @@ export default function ClsBookingForm({ isOpen, setIsOpen, clsId }) {
   });
 
   const { addBooking } = useBooking();
+  const { success, error: showError, loading: showLoading } = useSonnerToast();
 
   const courses_name = (matchedTe?.matchedCourse?.course_name || "")
     .split(",")
@@ -60,19 +62,27 @@ export default function ClsBookingForm({ isOpen, setIsOpen, clsId }) {
     // console.log("clsid", clsId);
     const allFieldsFilled = Object.values(form).every((val) => val !== "");
     if (!allFieldsFilled) {
+      showError("Please fill all fields");
+      return;
     }
     console.log("Booking Info:", form);
-    await addBooking(form);
-    setForm({
-      classroom_id: "",
-      teacher_id: "",
-      timeFrom: "",
-      timeTo: "",
-      semester: "",
-      section: "",
-      course: "",
-    });
-    setIsOpen(false);
+    try {
+      showLoading("Booking classroom...");
+      await addBooking(form);
+      success("Classroom booked successfully");
+      setForm({
+        classroom_id: "",
+        teacher_id: "",
+        timeFrom: "",
+        timeTo: "",
+        semester: "",
+        section: "",
+        course: "",
+      });
+      setIsOpen(false);
+    } catch (err) {
+      showError("Failed to book classroom");
+    }
   };
 
   if (!isOpen) return null;

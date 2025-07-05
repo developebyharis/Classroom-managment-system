@@ -1,31 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useClassroom } from "@/hooks/useClassroom";
-import { useTeacher } from "@/hooks/useTeacher";
+import { useSonnerToast } from "@/hooks/useSonnerToast";
+import { useDepartments } from "@/hooks/useDepartments";
 
 export default function AddClassroomForm({
   isOpen,
   onClose,
-  onAdd,
-  departments = [],
 }) {
   const [form, setForm] = useState({
     classroomName: "",
     department: "",
   });
-  const { classroom, loading } = useClassroom();
-  const [department, setDepartment] = useState([]);
+  const { departments } = useDepartments()
 
   const { addClassroom } = useClassroom();
-  useEffect(() => {
-    if (!loading) {
-      const dep = classroom.data.department;
-      const mappedDep = dep.map((depar) => depar.department_name);
-      setDepartment(mappedDep);
-    } else {
-      console.log("loading..");
-    }
-  }, [classroom]);
+  const { success, error: showError, loading: showLoading } = useSonnerToast();
+ 
 
   const [newDepartment, setNewDepartment] = useState(false);
 
@@ -39,11 +30,13 @@ export default function AddClassroomForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("f",form)
     try {
+      showLoading("Adding classroom...");
       await addClassroom(form);
+      success("Classroom added successfully");
+      onClose();
     } catch (err) {
-      alert("Error: " + err.message);
+      showError("Failed to add classroom");
     }
   };
 
@@ -111,9 +104,9 @@ export default function AddClassroomForm({
                 required
               >
                 <option value="">Select Department</option>
-                {department.map((dep, idx) => (
+                {departments.map((dep, idx) => (
                   <option key={idx} value={dep}>
-                    {dep}
+                    {dep.department_name}
                   </option>
                 ))}
               </select>

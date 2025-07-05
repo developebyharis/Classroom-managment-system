@@ -1,3 +1,5 @@
+"use server"
+
 import { EmptyState } from "@/components/layout/PageLayout";
 import { Search } from "lucide-react";
 import { getData } from "@/helper/getData";

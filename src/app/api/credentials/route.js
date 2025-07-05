@@ -6,11 +6,11 @@ export async function OPTIONS(request) {
 }
 
 export async function GET() {
-  const res = await getCredentials();
-  return withCorsHeaders(res);
+  return await getCredentials();
+  
 }
 
 export async function POST(req) {
-  const res = await createCredentials(req);
-  return withCorsHeaders(res);
+  return await createCredentials(req);
+ 
 }

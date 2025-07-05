@@ -1,5 +1,5 @@
 
-import { getData } from "./getData";
+import { getData } from "../../helper/getData";
 
 export async function getTeacherDepartment(teacher) {
     const { department } = await getData();

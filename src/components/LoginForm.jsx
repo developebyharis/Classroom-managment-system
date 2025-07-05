@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSonnerToast } from "@/hooks/useSonnerToast";
 
 export function LoginForm({ className }) {
   const [error, setError] = useState("");
   const router = useRouter();
+  const { success, error: showError, loading: showLoading } = useSonnerToast();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -17,16 +19,23 @@ export function LoginForm({ className }) {
     const username = formData.get("username");
     const password = formData.get("password");
 
-    const res = await signIn("credentials", {
-      redirect: false,
-      username,
-      password,
-    });
+    try {
+      showLoading("Signing in...");
+      const res = await signIn("credentials", {
+        redirect: false,
+        username,
+        password,
+      });
 
-    if (res.ok) {
-      router.push("/"); 
-    } else {
-      setError("Invalid username or password");
+      if (res.ok) {
+        success("Login successful");
+        router.push("/"); 
+      } else {
+        setError("Invalid username or password");
+        showError("Invalid username or password");
+      }
+    } catch (err) {
+      showError("Login failed");
     }
   }
 

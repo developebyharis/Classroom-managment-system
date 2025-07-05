@@ -1,12 +1,11 @@
-// "use server"
+"use server"
 import { getData } from "@/helper/getData";
 import AdminDashboardClient from "./AdminDashboardClient";
-import { getTeacherDepartment } from "@/helper/filterMatch";
+import { getTeacherDepartment } from "@/lib/server/filterMatch";
 
-export default async function AdminPage() {
+export default async function page() {
   const { classroom, department, teacher, booking } = await getData();
-  const matchDepartment = getTeacherDepartment(teacher);
-console.log("Matched Department:", matchDepartment);
+  const matchDepartment = await getTeacherDepartment(teacher);
   return (
     <AdminDashboardClient
       classroom={classroom}
