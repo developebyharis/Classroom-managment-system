@@ -1,62 +1,88 @@
 "use client";
 import { useState } from "react";
-import ClassroomCard from "@/components/classroomCard";
 import TeacherCard from "@/components/TeacherCard";
 import AddClassroomForm from "@/components/AddClsForm";
 import AddTeacherForm from "@/components/AddTeacherForm";
-import FilterDropdowns from "@/components/filter/options";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Users as UsersIcon, } from "lucide-react";
+import { Plus } from "lucide-react";
 import EditTeacherForm from "@/components/EditTeacherForm";
-
-const STATUS_OPTIONS = ["Available", "Booked"];
+import useClassroomFilters from "@/hooks/useClassroomFilters";
+import ClassroomWithFilters from "@/components/ClassroomWithFilters";
 
 export default function AdminDashboardClient({
   classroom,
   department,
   teacher,
-  course,
+  matchedDepartment,
   booking,
   bookingTeachers,
 }) {
-  const [selectedDepartment, setSelectedDepartment] =
-    useState("All Department");
-  const [selectedStatus, setSelectedStatus] = useState("Available");
   const [showAddClassroom, setShowAddClassroom] = useState(false);
   const [showAddTeacher, setShowAddTeacher] = useState(false);
   const [activeTab, setActiveTab] = useState("classrooms");
   const [editTeacher, setEditTeacher] = useState(null);
 
-  console.log(editTeacher)
-  const departmentNames = [
-    "All Department",
-    ...department?.map((d) => d.department_name),
+  const totalClassrooms = classroom.length;
+  const totalTeachers = teacher.length;
+  const {
+    availableCount,
+    totalBookedCount,
+  } = useClassroomFilters(classroom, department);
+  const statsData = [
+    {
+      title: "Total Classrooms",
+      value: totalClassrooms,
+      icon: "🏫"
+    },
+    {
+      title: "Available",
+      value: availableCount,
+      icon: "✅"
+    },
+    {
+      title: "Total Booking",
+      value: totalBookedCount,
+      icon: "📅"
+    },
+    {
+      title: "Total Teachers",
+      value: totalTeachers,
+      icon: "👨‍🏫"
+    }
   ];
-  const filteredClassrooms =
-    classroom?.filter((cls) => {
-      let departmentMatch = true;
-      if (selectedDepartment !== "All Department") {
-        const selectedDept = department?.find(
-          (d) => d.department_name === selectedDepartment
-        );
-        departmentMatch = cls.department_id === selectedDept?.id;
-      }
-      const statusMatch =
-        selectedStatus === "Available"
-          ? cls.booking_id === null
-          : cls.booking_id !== null;
-      return departmentMatch && statusMatch;
-    }) || [];
-
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <div className="flex-1 flex overflow-hidden">
         {/* Main Content */}
         <main className="flex-1 p-4 md:p-10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8"></div>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-1">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-500">
+              Manage classrooms and teachers.
+            </p>
+          </div>
 
-          <div className="">
+          <section className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+            {statsData.map((stat, index) => (
+              <Card key={index} className="bg-white border border-gray-100 shadow-none">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                    <span>{stat.icon}</span>
+                    {stat.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-3xl font-semibold text-gray-900">
+                  {stat.value}
+                </CardContent>
+              </Card>
+            ))}
+          </section>
+
+          <div className="bg-white/80 rounded-2xl border border-gray-100 p-6">
             <Tabs
               value={activeTab}
               onValueChange={setActiveTab}
@@ -70,60 +96,21 @@ export default function AdminDashboardClient({
                   Teachers
                 </TabsTrigger>
               </TabsList>
-               <div className="flex justify-end gap-2 mb-6">
-            <Button onClick={() => setShowAddClassroom(true)} variant="outline" className="gap-2">
-              <Plus className="w-4 h-4" /> Add Classroom
-            </Button>
-            <Button onClick={() => setShowAddTeacher(true)} variant="outline" className="gap-2">
-              <Plus className="w-4 h-4" /> Add Teacher
-            </Button>
-          </div>
+              <div className="flex justify-end gap-2 mb-6">
+                <Button onClick={() => setShowAddClassroom(true)} variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" /> Add Classroom
+                </Button>
+                <Button onClick={() => setShowAddTeacher(true)} variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" /> Add Teacher
+                </Button>
+              </div>
               <TabsContent value="classrooms">
-                <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-                  <FilterDropdowns
-                    optionValue={departmentNames}
-                    value={selectedDepartment}
-                    onChange={setSelectedDepartment}
-                    name="Department"
-                  />
-                  <FilterDropdowns
-                    optionValue={STATUS_OPTIONS}
-                    value={selectedStatus}
-                    onChange={setSelectedStatus}
-                    name="Status"
-                  />
-                </div>
-                {filteredClassrooms?.length === 0 ? (
-                  <div className="text-center text-gray-500 py-8 border rounded bg-gray-50">
-                    No classrooms found.
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredClassrooms?.map((cls) => {
-                      const bookingData = cls.booking_id
-                        ? booking?.find((b) => b.id === cls.booking_id)
-                        : null;
-
-                      const teacherData = bookingData
-                        ? bookingTeachers?.find(
-                            (t) => t.id === bookingData.teacher_id
-                          )
-                        : teacher.length > 1
-                        ? teacher
-                        : teacher;
-
-                      return (
-                        <ClassroomCard
-                          key={cls.id}
-                          classroom={cls}
-                          teacher={teacherData}
-                          department={department}
-                          bookingData={bookingData}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
+                <ClassroomWithFilters
+                  classrooms={classroom}
+                  departments={department}
+                  teachers={teacher}
+                  bookings={booking}
+                />
               </TabsContent>
               <TabsContent value="teachers">
                 {teacher.length === 0 ? (
@@ -131,7 +118,12 @@ export default function AdminDashboardClient({
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {teacher?.map((t) => (
-                      <TeacherCard key={t.id} teacher={t} dep={department} onEdit={(teacher, dep) => setEditTeacher(teacher)} />
+                      <TeacherCard
+                        key={t.id}
+                        teacher={t}
+                        dep={matchedDepartment}
+                        onEdit={(teacher) => setEditTeacher(teacher)}
+                      />
                     ))}
                   </div>
                 )}
@@ -155,7 +147,7 @@ export default function AdminDashboardClient({
             isOpen={!!editTeacher}
             onClose={() => setEditTeacher(null)}
             onSave={() => setEditTeacher(null)}
-          
+
           />
         </main>
       </div>

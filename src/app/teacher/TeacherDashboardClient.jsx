@@ -5,8 +5,8 @@ import BookingCard from "@/components/BookingCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ClassroomCard from "@/components/classroomCard";
-import FilterDropdowns from "@/components/filter/options";
+import ClassroomWithFilters from "@/components/ClassroomWithFilters";
+import useClassroomFilters from "@/hooks/useClassroomFilters";
 
 export default function TeacherDashboardClient({
   classroom,
@@ -14,55 +14,27 @@ export default function TeacherDashboardClient({
   teacher,
   booking,
 }) {
-  const [isOpenForm, setOpenForm] = useState(false);
-  const [selectedClassroomId, setSelectedClassroomId] = useState(null);
-  const [selectedDepartment, setSelectedDepartment] =
-    useState("All Department");
-  const [selectedStatus, setSelectedStatus] = useState("Available");
+  const [isOpenForm, setOpenForm] = useState();
+  const [selectedClassroomId, setSelectedClassroomId] = useState();
+
   const [activeTab, setActiveTab] = useState("yourBookings");
 
-  const teachers = teacher;
-  const depList = department;
 
-  const availableCount = classroom.filter((c) => c.booking_id === null).length;
-  const bookedCount = classroom.filter((c) => c.booking_id !== null).length;
 
-  const departmentNames = [
-    "All Department",
-    ...department?.map((d) => d.department_name),
-  ];
 
-  const filteredClassrooms =
-    classroom?.filter((cls) => {
-      let departmentMatch = true;
-      if (selectedDepartment !== "All Department") {
-        const selectedDept = department?.find(
-          (d) => d.department_name === selectedDepartment
-        );
-        departmentMatch = cls.department_id === selectedDept?.id;
-      }
-      const statusMatch =
-        selectedStatus === "Available"
-          ? cls.booking_id === null
-          : cls.booking_id !== null;
-      return departmentMatch && statusMatch;
-    }) || [];
-
-  const filteredAvailableCount = filteredClassrooms.filter(
-    (c) => c.booking_id === null
-  ).length;
-  const filteredBookedCount = filteredClassrooms.filter(
-    (c) => c.booking_id !== null
-  ).length;
+  const {
+    availableCount,
+    totalBookedCount,
+  } = useClassroomFilters(classroom, department);
 
   function handleBookClassroom(details) {
     setOpenForm(false);
   }
 
-  const handleOpenBookingForm = (classroomId) => {
-    setSelectedClassroomId(classroomId);
-    setOpenForm(true);
-  };
+  // const handleOpenBookingForm = (classroomId) => {
+  //   setSelectedClassroomId(classroomId);
+  //   setOpenForm(true);
+  // };
 
   return (
     <div className="min-h-screen bg-white flex flex-col md:flex-row">
@@ -114,9 +86,7 @@ export default function TeacherDashboardClient({
               </CardTitle>
             </CardHeader>
             <CardContent className="text-3xl font-semibold text-gray-900">
-              {selectedStatus === "Available"
-                ? filteredAvailableCount
-                : availableCount}
+              {availableCount}
             </CardContent>
           </Card>
           <Card className="bg-white border border-gray-100 shadow-none">
@@ -172,51 +142,14 @@ export default function TeacherDashboardClient({
             </TabsContent>
 
             <TabsContent value="availableClassrooms" id="available">
-              <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-                <FilterDropdowns
-                  optionValue={departmentNames}
-                  value={selectedDepartment}
-                  onChange={setSelectedDepartment}
-                  name="Department"
-                />
-                <FilterDropdowns
-                  optionValue={["Available", "Booked"]}
-                  value={selectedStatus}
-                  onChange={setSelectedStatus}
-                  name="Status"
-                />
-              </div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Available Classrooms
-              </h2>
-              {filteredClassrooms.length === 0 ? (
-                <Card className="bg-gray-50 border-0">
-                  <CardContent className="py-8 text-center text-gray-500">
-                    No classrooms available.
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredClassrooms.map((cls) => {
-                    const bookingData = cls.booking_id
-                      ? booking?.find((b) => b.id === cls.booking_id)
-                      : null;
-                    const teacherData = bookingData
-                      ? teacher?.find((t) => t.id === bookingData.teacher_id)
-                      : teachers;
-                    return (
-                      <ClassroomCard
-                        key={cls.id}
-                        classroom={cls}
-                        teacher={teacherData}
-                        department={department}
-                        setOpenForm={() => handleOpenBookingForm(cls.id)}
-                        bookingData={bookingData}
-                      />
-                    );
-                  })}
-                </div>
-              )}
+              <ClassroomWithFilters
+                classrooms={classroom}
+                departments={department}
+                teachers={teacher}
+                bookings={booking}
+                setSelectedClassroomId={setSelectedClassroomId}
+                setOpenForm={setOpenForm}
+              />
             </TabsContent>
           </Tabs>
         </div>

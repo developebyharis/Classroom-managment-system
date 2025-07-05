@@ -1,7 +1,7 @@
-import ClassroomFilter from "@/components/ClassroomFilter";
 import { EmptyState } from "@/components/layout/PageLayout";
 import { Search } from "lucide-react";
 import { getData } from "@/helper/getData";
+import ClassroomWithFilters from "@/components/ClassroomWithFilters";
 
 export default async function Home() {
   const { classroom, department, teacher, booking } = await getData();
@@ -18,11 +18,11 @@ export default async function Home() {
             description="There are no classrooms available in the system at the moment."
           />
         ) : (
-          <ClassroomFilter
-            initialClassrooms={classroom}
-            initialDepartments={department}
-            initialTeachers={teacher}
-            initialBookings={booking.data.booking}
+          <ClassroomWithFilters
+            classrooms={classroom}
+            departments={department}
+            teachers={teacher}
+            bookings={booking.data.booking}
           />
         )}
     </div>

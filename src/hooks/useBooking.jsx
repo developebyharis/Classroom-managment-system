@@ -26,8 +26,8 @@ export function useBooking() {
   async function addBooking(data) {
     try {
       setLoading(true);
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/booking`, data, {
-        header: "Content-Type: application/json",
+      const res = await axios.post(`api/booking`, data, {
+        headers: "Content-Type: application/json",
       });
       if (res.ok) await getBookings();
       setLoading(false);
@@ -52,7 +52,7 @@ export function useBooking() {
     console.log("delete id", id);
     try {
       setLoading(true);
-      const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/booking`, {
+      const res = await axios.delete(`api/booking`, {
         data: { id },
         headers: { "Content-Type": "application/json" }, 
       });

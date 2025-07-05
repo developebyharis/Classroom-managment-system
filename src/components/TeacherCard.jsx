@@ -24,40 +24,33 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getDepartmentColor } from "@/lib/utils";
 
-export default  function TeacherCard({
+export default function TeacherCard({
   teacher,
-  // matchedDepartment,
+  matchedDepartment,
   onEdit,
   onDelete,
-  dep
 }) {
   if (!teacher) {
     console.error("TeacherCard: 'teacher' prop is undefined or null.");
     return null;
   }
-  const matchedDepartment = dep?.find((d) => d.id === teacher.department_id);
- const departments = matchedDepartment ? [matchedDepartment.department_name] : [];
-
-
-  // console.log("d",departments);
-  
+  const departments = matchedDepartment ? [matchedDepartment.department_name] : [];
 
   const sections = Array.isArray(teacher?.section)
     ? teacher.section
     : teacher?.section
-    ? [teacher.section]
-    : [];
+      ? [teacher.section]
+      : [];
 
   const semesters = Array.isArray(teacher?.semester)
     ? teacher.semester
     : teacher?.semester
-    ? [teacher.semester]
-    : [];
+      ? [teacher.semester]
+      : [];
 
   return (
     <Card className="w-full h-full border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-xl">
       <CardHeader className="pb-3 flex items-start justify-between">
-        {/* Info Section */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
             <User className="w-5 h-5 text-gray-500" />
@@ -70,7 +63,6 @@ export default  function TeacherCard({
           </div>
         </div>
 
-        {/* Dot Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

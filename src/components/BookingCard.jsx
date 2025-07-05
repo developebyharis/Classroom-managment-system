@@ -1,13 +1,15 @@
-"use server";
+// "use server";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, GraduationCap, BookOpen, X } from "lucide-react";
 import { formatTime, getStatusColor } from "@/lib/utils";
+// import { useBooking } from "@/hooks/useBooking";
 import { deleteBooking } from "@/lib/server/booking";
 
-export default async function BookingCard({ booking, classroom }) {
+export default function BookingCard({ booking, classroom }) {
+  // const {deleteBooking} = useBooking()
   const handleUnbook = async () => {
     await deleteBooking(booking.id);
   };
